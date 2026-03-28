@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Моя аренда</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2f80ed">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="mobile-shell">
+        <div class="hero-card">
+            <div class="logo-badge">Z</div>
+            <h1 class="hero-title">Моя аренда</h1>
+
+            {% if rental %}
+                <div class="rental-status-card">
+                    <div class="status-pill">
+                        Статус: {{ rental.status }}
+                    </div>
+
+                    <div class="rental-info-grid">
+                        <div class="rental-info-item">
+                            <span class="info-label">Телефон</span>
+                            <span class="info-value">{{ user.phone }}</span>
+                        </div>
+
+                        <div class="rental-info-item">
+                            <span class="info-label">Ячейка</span>
+                            <span class="info-value">№{{ rental.slot_number }}</span>
+                        </div>
+
+                        <div class="rental-info-item">
+                            <span class="info-label">Начало</span>
+                            <span class="info-value">{{ rental.start_time }}</span>
+                        </div>
+
+                        <div class="rental-info-item">
+                            <span class="info-label">Rental ID</span>
+                            <span class="info-value">{{ rental.id }}</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-actions" style="margin-top: 22px;">
+                        <a class="big-action primary-action" href="/return">Вернуть заряд</a>
+                        <a class="big-action secondary-action" href="/my-rental">Обновить</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="install-box">
+                    <h2>Активной аренды нет</h2>
+                    <p>Сейчас на этом номере нет активного powerbank.</p>
+                </div>
+
+                <div class="hero-actions">
+                    <a class="big-action primary-action" href="/take">Взять заряд</a>
+                    <a class="big-action secondary-action" href="/">На главную</a>
+                </div>
+            {% endif %}
+
+            <div class="mini-links">
+                <a href="/">Главная</a>
+                <a href="/my-rental">Проверить другой номер</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/static/service-worker.js");
+        });
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вернуть заряд — способ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="kiosk-body kiosk-body-v2">
+<div class="kiosk-method-screen">
+    <div class="kiosk-method-card">
+        <div class="kiosk-method-title">Как хотите вернуть заряд?</div>
+        <div class="kiosk-method-subtitle">Выберите удобный способ возврата</div>
+
+        <div class="kiosk-method-grid">
+            <a href="/kiosk/return/qr" class="kiosk-method-btn">
+                <div class="kiosk-method-btn-title">По QR-коду</div>
+                <div class="kiosk-method-btn-text">Откройте возврат на телефоне через QR</div>
+            </a>
+
+            <a href="/kiosk/return/manual" class="kiosk-method-btn">
+                <div class="kiosk-method-btn-title">По номеру и PIN</div>
+                <div class="kiosk-method-btn-text">Введите номер телефона и PIN прямо на станции</div>
+            </a>
+        </div>
+
+        <div class="kiosk-back-v2">
+            <a href="/kiosk" class="kiosk-back-btn-v2">Назад</a>
+        </div>
+    </div>
+</div>
+
+<script src="/static/kiosk_idle_timeout.js"></script>
+</body>
+</html>

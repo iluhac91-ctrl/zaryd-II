@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Zaryd</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2f80ed">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="mobile-shell">
+        <div class="hero-card">
+            <div class="logo-badge">Z</div>
+            <h1 class="hero-title">Zaryd</h1>
+            <p class="hero-subtitle">Выберите действие</p>
+
+            <div class="hero-actions">
+                <a class="big-action primary-action" href="/take">Взять заряд</a>
+                <a class="big-action secondary-action" href="/return">Вернуть заряд</a>
+                <a class="big-action secondary-action" href="/my-rental">Моя аренда</a>
+            </div>
+
+            <div class="install-box">
+                <h2>Установить приложение</h2>
+                <p>
+                    Добавьте сервис на главный экран телефона для быстрого доступа.
+                </p>
+            </div>
+
+            <div class="mini-links">
+                <a href="/">Главная</a>
+                <a href="/admin">Админка</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/static/service-worker.js");
+        });
+      }
+    </script>
+</body>
+</html>

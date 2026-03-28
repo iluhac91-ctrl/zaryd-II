@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Станция зарядов</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Станция зарядов</h1>
+
+        <div class="buttons">
+            <a class="btn" href="/take">Взять заряд</a>
+            <a class="btn" href="/return">Вернуть заряд</a>
+            <a class="btn secondary" href="/register">Регистрация</a>
+        </div>
+
+        <h2>Статус ячеек</h2>
+        <div class="slots">
+            {% for slot in slots %}
+                <div class="slot">
+                    <strong>Ячейка {{ slot.slot_number }}</strong><br>
+                    Статус: {{ slot.status }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

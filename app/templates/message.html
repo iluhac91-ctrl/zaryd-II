@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2f80ed">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="mobile-shell">
+        <div class="hero-card status-screen">
+            <div class="status-icon">✓</div>
+            <h1 class="hero-title">{{ title }}</h1>
+            <p class="hero-subtitle">{{ message }}</p>
+
+            <div class="hero-actions">
+                <a class="big-action primary-action" href="{{ home_url if home_url else '/' }}">На главную</a>
+                <a class="big-action secondary-action" href="/my-rental">Моя аренда</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/static/service-worker.js");
+        });
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: iibox-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: CLOUDPAYMENTS_PUBLIC_ID
+        sync: false
+      - key: CLOUDPAYMENTS_API_PUBLIC_KEY
+        sync: false
+      - key: CLOUDPAYMENTS_API_SECRET
+        sync: false
+      - key: CLOUDPAYMENTS_CURRENCY
+        value: RUB

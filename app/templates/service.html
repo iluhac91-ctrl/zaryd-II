@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервисный режим</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container admin-page">
+        <h1>Сервисный режим</h1>
+
+        <div class="buttons">
+            <a class="btn" href="/">На главную</a>
+            <a class="btn secondary" href="/admin">Админка</a>
+        </div>
+
+        <h2>Состояние станции</h2>
+        <div class="admin-card">
+            <p><strong>ID:</strong> {{ config.station_id }}</p>
+            <p><strong>Имя:</strong> {{ config.station_name }}</p>
+            <p><strong>Адрес:</strong> {{ config.station_address }}</p>
+            <p><strong>Режим обслуживания:</strong>
+                {% if config.service_mode %}
+                    ВКЛ
+                {% else %}
+                    ВЫКЛ
+                {% endif %}
+            </p>
+
+            <form method="post" action="/service/toggle-mode">
+                <button type="submit" class="btn">
+                    {% if config.service_mode %}
+                        Выключить режим обслуживания
+                    {% else %}
+                        Включить режим обслуживания
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+
+        <h2>Настройки станции</h2>
+        <div class="admin-card">
+            <form method="post" action="/service/update-config">
+                <input type="text" name="station_name" value="{{ config.station_name }}" placeholder="Имя станции" required>
+                <input type="text" name="station_address" value="{{ config.station_address }}" placeholder="Адрес станции" required>
+                <button type="submit" class="btn">Сохранить настройки</button>
+            </form>
+        </div>
+
+        <h2>Ячейки</h2>
+        <div class="admin-grid">
+            {% for slot in slots %}
+            <div class="admin-card">
+                <p><strong>Ячейка:</strong> {{ slot.slot_number }}</p>
+                <p><strong>Статус:</strong> {{ slot.status }}</p>
+
+                {% if slot.status == "disabled" %}
+                    <form method="post" action="/service/enable-slot">
+                        <input type="hidden" name="slot_number" value="{{ slot.slot_number }}">
+                        <button type="submit" class="btn">Включить ячейку</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="/service/disable-slot">
+                        <input type="hidden" name="slot_number" value="{{ slot.slot_number }}">
+                        <button type="submit" class="btn secondary">Отключить ячейку</button>
+                    </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2>Активные и последние аренды</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Слот</th>
+                        <th>Статус</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rental in rentals %}
+                    <tr>
+                        <td>{{ rental.id }}</td>
+                        <td>{{ rental.user_id }}</td>
+                        <td>{{ rental.slot_number }}</td>
+                        <td>{{ rental.status }}</td>
+                        <td>{{ rental.start_time }}</td>
+                        <td>{{ rental.end_time }}</td>
+                        <td>
+                            {% if rental.status in ["issuing", "active", "returning"] %}
+                            <form method="post" action="/service/finish-rental">
+                                <input type="hidden" name="rental_id" value="{{ rental.id }}">
+                                <button type="submit" class="btn secondary">Завершить</button>
+                            </form>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

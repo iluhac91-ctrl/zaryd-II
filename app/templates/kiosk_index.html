@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>IIBOX Power Station</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/kiosk_main_fix.css">
+</head>
+<body class="kiosk-body kiosk-body-v2">
+    <div class="kiosk-main-shell">
+        <header class="kiosk-main-header">
+            <div class="kiosk-main-overline">POWER STATION</div>
+            <div class="kiosk-main-brand">IIBOX</div>
+            {% if station_address %}
+            <div class="kiosk-main-address">{{ station_address }}</div>
+            {% endif %}
+        </header>
+
+        <main class="kiosk-main-grid">
+            <section class="kiosk-main-left">
+                <div class="kiosk-main-hero">
+                    <h1>Выберите действие</h1>
+                    <p>
+                        Нажмите нужную кнопку на экране и следуйте подсказкам станции.
+                    </p>
+                </div>
+
+                {% if service_mode %}
+                <div class="kiosk-main-warning">
+                    Станция временно на обслуживании
+                </div>
+                {% endif %}
+
+                <div class="kiosk-main-actions">
+                    <a class="kiosk-main-btn" href="/kiosk/take">
+                        <div class="kiosk-main-btn-title">Взять заряд</div>
+                        <div class="kiosk-main-btn-text">Арендуйте powerbank за пару секунд</div>
+                    </a>
+
+                    <a class="kiosk-main-btn" href="/kiosk/return">
+                        <div class="kiosk-main-btn-title">Вернуть заряд</div>
+                        <div class="kiosk-main-btn-text">Если у вас уже есть powerbank IIBOX</div>
+                    </a>
+
+                    <a class="kiosk-main-btn" href="/kiosk/register">
+                        <div class="kiosk-main-btn-title">Впервые здесь?</div>
+                        <div class="kiosk-main-btn-text">Зарегистрируйтесь перед первой арендой</div>
+                    </a>
+                </div>
+            </section>
+
+            <aside class="kiosk-main-right">
+                <div class="kiosk-main-visual-card">
+                    <div class="powerbank-scene kiosk-main-scene">
+                        <div class="powerbank-3d kiosk-main-powerbank">
+                            <div class="pb-face pb-front">
+                                <div class="pb-screen"></div>
+                                <div class="pb-logo">IIBOX</div>
+                            </div>
+                            <div class="pb-face pb-back"></div>
+                            <div class="pb-face pb-left"></div>
+                            <div class="pb-face pb-right"></div>
+                            <div class="pb-face pb-top"></div>
+                            <div class="pb-face pb-bottom"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kiosk-main-info-card">
+                    <div class="kiosk-main-info-title">Как пользоваться</div>
+
+                    <div class="kiosk-main-info-line">
+                        <span class="kiosk-main-step">1</span>
+                        <span>Нажмите «Взять заряд» или «Вернуть заряд»</span>
+                    </div>
+
+                    <div class="kiosk-main-info-line">
+                        <span class="kiosk-main-step">2</span>
+                        <span>Выберите способ: QR-код или номер и PIN</span>
+                    </div>
+
+                    <div class="kiosk-main-info-line">
+                        <span class="kiosk-main-step">3</span>
+                        <span>Следуйте подсказкам на экране станции</span>
+                    </div>
+
+                    <div class="kiosk-main-info-note">
+                        Станция работает в тестовом режиме. Оплата будет подключена позже.
+                    </div>
+                </div>
+
+                <div class="kiosk-main-statusbar">
+                    <div class="kiosk-main-status-item">
+                        <span>Доступно зарядов</span>
+                        <strong>{{ available_count }}</strong>
+                    </div>
+                    <div class="kiosk-main-status-item">
+                        <span>Свободно для возврата</span>
+                        <strong>{{ empty_count }}</strong>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="/static/kiosk_idle_timeout.js?v=4"></script>
+</body>
+</html>

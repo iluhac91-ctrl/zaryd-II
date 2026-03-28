@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIBOX Checkout Test</title>
+    <script src="https://checkout.cloudpayments.ru/checkout.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(59,130,246,0.16), transparent 24%),
+                radial-gradient(circle at 20% 80%, rgba(96,165,250,0.10), transparent 24%),
+                linear-gradient(135deg, #09111d 0%, #0f1726 45%, #15233a 100%);
+            min-height: 100vh;
+        }
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+        .card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 36px rgba(0,0,0,0.22);
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 38px;
+            line-height: 1.08;
+        }
+        p {
+            margin: 0 0 16px;
+            color: rgba(255,255,255,0.86);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            height: 54px;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 18px;
+        }
+        input::placeholder {
+            color: rgba(255,255,255,0.45);
+        }
+        .btns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        button {
+            min-height: 56px;
+            padding: 0 22px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 800;
+        }
+        .primary {
+            background: linear-gradient(135deg, #172554 0%, #1e3a8a 45%, #1d4ed8 100%);
+            color: white;
+        }
+        .secondary {
+            background: rgba(255,255,255,0.10);
+            color: white;
+        }
+        .log-title {
+            margin-top: 18px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+        }
+        .log {
+            background: #0b1220;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 14px;
+            min-height: 180px;
+            max-height: 360px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: monospace;
+            font-size: 13px;
+            color: #dbeafe;
+        }
+        .meta {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.82);
+            font-size: 15px;
+            line-height: 1.45;
+        }
+        @media (max-width: 800px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <h1>IIBOX • Checkout test</h1>
+        <p>
+            Правильная форма CloudPayments Checkout. Здесь карта собирается через поля
+            с атрибутами <code>data-cp</code>, как рекомендует документация.
+        </p>
+
+        <form id="paymentForm" autocomplete="off">
+            <div class="grid">
+                <div class="grid-2">
+                    <div>
+                        <label for="cardNumber">Номер карты</label>
+                        <input id="cardNumber" data-cp="cardNumber" type="text" placeholder="4242 4242 4242 4242" value="4242424242424242">
+                    </div>
+                    <div>
+                        <label for="cardName">Имя держателя (латиницей)</label>
+                        <input id="cardName" data-cp="name" type="text" placeholder="TEST TEST" value="TEST TEST">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div>
+                        <label for="expDateMonth">Месяц</label>
+                        <input id="expDateMonth" data-cp="expDateMonth" type="text" placeholder="12" value="12">
+                    </div>
+                    <div>
+                        <label for="expDateYear">Год</label>
+                        <input id="expDateYear" data-cp="expDateYear" type="text" placeholder="30" value="30">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div>
+                        <label for="cvv">CVV</label>
+                        <input id="cvv" data-cp="cvv" type="text" placeholder="123" value="123">
+                    </div>
+                    <div>
+                        <label for="email">Email</label>
+                        <input id="email" type="email" placeholder="test@example.com" value="">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div>
+                        <label for="amount">Сумма</label>
+                        <input id="amount" type="number" step="0.01" value="10">
+                    </div>
+                    <div>
+                        <label for="accountId">Телефон / AccountId</label>
+                        <input id="accountId" type="text" value="+79246667026">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="description">Описание</label>
+                    <input id="description" type="text" value="Тестовая аренда IIBOX">
+                </div>
+            </div>
+        </form>
+
+        <div class="btns">
+            <button class="primary" id="payBtn" type="button">Создать криптограмму и отправить</button>
+            <button class="secondary" id="clearLogBtn" type="button">Очистить лог</button>
+        </div>
+
+        <div class="meta">
+            <div><strong>Public ID:</strong> {{ public_id }}</div>
+            <div><strong>Валюта:</strong> {{ currency }}</div>
+            <div><strong>Тестовая карта:</strong> 4242 4242 4242 4242</div>
+        </div>
+
+        <div class="log-title">Лог</div>
+        <div class="log" id="logBox"></div>
+    </div>
+</div>
+
+<script>
+    const publicId = "{{ public_id }}";
+    const logBox = document.getElementById("logBox");
+
+    function safeStringify(value) {
+        try {
+            return JSON.stringify(value, null, 2);
+        } catch (e) {
+            return String(value);
+        }
+    }
+
+    function log(message, payload) {
+        const time = new Date().toLocaleTimeString();
+        const line = `[${time}] ${message}`;
+        const extra = payload !== undefined ? `\n${safeStringify(payload)}\n` : "\n";
+        logBox.textContent += line + extra;
+        logBox.scrollTop = logBox.scrollHeight;
+        console.log(message, payload);
+    }
+
+    async function submitPayment() {
+        log("START");
+
+        if (!window.cp) {
+            log("checkout script not loaded");
+            return;
+        }
+
+        const checkout = new cp.Checkout(publicId);
+        const result = checkout.createCryptogramPacket();
+
+        log("CRYPT RESULT", result);
+
+        if (!result.success) {
+            log("CRYPT ERROR", result.messages);
+            return;
+        }
+
+        const payload = {
+            cryptogram: result.packet,
+            amount: parseFloat(document.getElementById("amount").value || "0"),
+            account_id: document.getElementById("accountId").value || "",
+            description: document.getElementById("description").value || "Тестовая аренда IIBOX",
+            email: document.getElementById("email").value || ""
+        };
+
+        log("SEND TO BACKEND", payload);
+
+        try {
+            const response = await fetch("/pay-checkout-test-charge", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            log("BACKEND RESPONSE", data);
+        } catch (e) {
+            log("FETCH ERROR", {
+                message: e.message,
+                stack: e.stack
+            });
+        }
+    }
+
+    document.getElementById("payBtn").addEventListener("click", submitPayment);
+    document.getElementById("clearLogBtn").addEventListener("click", function () {
+        logBox.textContent = "";
+    });
+
+    log("PAGE LOADED");
+</script>
+</body>
+</html>

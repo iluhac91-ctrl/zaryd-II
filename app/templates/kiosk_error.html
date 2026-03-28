@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="20;url=/kiosk">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="kiosk-body kiosk-body-v2">
+
+<div class="kiosk-state-screen kiosk-state-error">
+    <div class="kiosk-state-glow"></div>
+
+    <div class="kiosk-state-card">
+        <div class="kiosk-state-icon kiosk-state-icon-error">!</div>
+        <div class="kiosk-state-title">{{ title }}</div>
+        <div class="kiosk-state-text">{{ message }}</div>
+
+        <div class="kiosk-state-actions">
+            <a href="/kiosk" class="kiosk-state-btn">Назад</a>
+        </div>
+
+        <div class="kiosk-auto-return-text">
+            Возврат на главный экран через 20 секунд
+        </div>
+    </div>
+</div>
+
+<script src="/static/kiosk_idle_timeout.js"></script>
+</body>
+</html>

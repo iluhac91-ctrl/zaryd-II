@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вернуть заряд по QR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="kiosk-body kiosk-body-v2">
+<div class="kiosk-qr-screen">
+    <div class="kiosk-qr-card premium">
+
+        <div class="kiosk-qr-top">
+            <div class="kiosk-method-title">Сканируйте QR</div>
+            <div class="kiosk-method-subtitle">Откройте возврат на телефоне</div>
+
+            <div class="kiosk-qr-callout">
+                Наведите камеру телефона на QR-код
+            </div>
+        </div>
+
+        <div class="kiosk-qr-center">
+            <div class="kiosk-qr-box premium">
+                <img src="/static/qr/qr_return_mobile.png" class="kiosk-qr-image" alt="QR вернуть заряд">
+            </div>
+        </div>
+
+        <div class="kiosk-qr-bottom">
+            <div class="kiosk-qr-hint">
+                Или используйте номер телефона и PIN
+            </div>
+
+            <div class="kiosk-qr-actions">
+                <a href="/kiosk/return/manual" class="kiosk-qr-secondary-btn">PIN</a>
+                <a href="/kiosk/return" class="kiosk-state-btn">Назад</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/kiosk_idle_timeout.js"></script>
+</body>
+</html>

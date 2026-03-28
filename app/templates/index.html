@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Zaryd</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2f80ed">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="mobile-shell">
+        <div class="hero-card">
+            <div class="logo-badge">Z</div>
+            <h1 class="hero-title">{{ station_name }}</h1>
+            <p class="hero-subtitle">{{ station_address }}</p>
+
+            {% if service_mode %}
+            <div class="install-box">
+                <h2>Станция на обслуживании</h2>
+                <p>Сейчас аренда и возврат временно недоступны.</p>
+            </div>
+            {% endif %}
+
+            <div class="hero-actions">
+                <a class="big-action primary-action" href="/take">Взять заряд</a>
+                <a class="big-action secondary-action" href="/return">Вернуть заряд</a>
+            </div>
+
+            <div class="install-box">
+                <h2>Установить как приложение</h2>
+                <p>
+                    На телефоне открой меню браузера и выбери
+                    <strong>«Добавить на главный экран»</strong>.
+                </p>
+            </div>
+
+            <div class="mini-links">
+                <a href="/register">Регистрация</a>
+                <a href="/my-rental">Моя аренда</a>
+                <a href="/service">Сервис</a>
+                <a href="/admin">Админка</a>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2>Статус ячеек</h2>
+            <div class="slots mobile-slots">
+                {% for slot in slots %}
+                    <div class="slot">
+                        <strong>Ячейка {{ slot.slot_number }}</strong><br>
+                        Статус: {{ slot.status }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/static/service-worker.js");
+        });
+      }
+    </script>
+</body>
+</html>

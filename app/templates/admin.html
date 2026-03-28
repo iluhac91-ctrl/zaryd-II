@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админка</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container admin-page">
+        <h1>Админ-панель</h1>
+
+        <div class="buttons">
+            <a class="btn" href="/">На главную</a>
+        </div>
+
+        <h2>Датчики дверей</h2>
+        <div class="admin-grid">
+            {% for slot_number, door in doors.items() %}
+            <div class="admin-card">
+                <p><strong>Ячейка:</strong> {{ slot_number }}</p>
+                <p><strong>GPIO pin:</strong> {{ door.pin }}</p>
+                <p><strong>Raw:</strong> {{ door.raw }}</p>
+                <p><strong>Дверца:</strong>
+                    {% if door.closed %}
+                        закрыта / нажата
+                    {% else %}
+                        открыта / отпущена
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2>Слоты</h2>
+        <div class="admin-grid">
+            {% for slot in slots %}
+            <div class="admin-card">
+                <p><strong>Ячейка:</strong> {{ slot.slot_number }}</p>
+                <p><strong>Статус:</strong> {{ slot.status }}</p>
+                <p><strong>Реле:</strong> {{ slot.relay_channel }}</p>
+
+                <form method="post" action="/admin/open-slot">
+                    <input type="hidden" name="slot_number" value="{{ slot.slot_number }}">
+                    <button type="submit" class="btn">Открыть слот</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 20px;">
+            <form method="post" action="/admin/reset-slots">
+                <button type="submit" class="btn secondary">Сбросить слоты в тестовое состояние</button>
+            </form>
+        </div>
+
+        <h2>Пользователи</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Телефон</th>
+                        <th>Создан</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.phone }}</td>
+                        <td>{{ user.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Аренды</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Слот</th>
+                        <th>Статус</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rental in rentals %}
+                    <tr>
+                        <td>{{ rental.id }}</td>
+                        <td>{{ rental.user_id }}</td>
+                        <td>{{ rental.slot_number }}</td>
+                        <td>{{ rental.status }}</td>
+                        <td>{{ rental.start_time }}</td>
+                        <td>{{ rental.end_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2>Журнал событий</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Тип</th>
+                        <th>Сообщение</th>
+                        <th>Телефон</th>
+                        <th>Слот</th>
+                        <th>Rental ID</th>
+                        <th>Создано</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.id }}</td>
+                        <td>{{ event.event_type }}</td>
+                        <td>{{ event.message }}</td>
+                        <td>{{ event.user_phone }}</td>
+                        <td>{{ event.slot_number }}</td>
+                        <td>{{ event.rental_id }}</td>
+                        <td>{{ event.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

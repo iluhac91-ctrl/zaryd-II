@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudPayments Test — IIBOX</title>
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(59,130,246,0.16), transparent 24%),
+                radial-gradient(circle at 20% 80%, rgba(96,165,250,0.10), transparent 24%),
+                linear-gradient(135deg, #09111d 0%, #0f1726 45%, #15233a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .wrap {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 36px 20px 48px;
+        }
+        .card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 36px rgba(0,0,0,0.22);
+        }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 40px;
+            line-height: 1.08;
+        }
+        p {
+            margin: 0 0 18px;
+            color: rgba(255,255,255,0.86);
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            height: 54px;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 18px;
+        }
+        input::placeholder {
+            color: rgba(255,255,255,0.45);
+        }
+        .btns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        button, .back {
+            min-height: 54px;
+            padding: 0 22px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .primary {
+            background: linear-gradient(135deg, #172554 0%, #1e3a8a 45%, #1d4ed8 100%);
+            color: white;
+        }
+        .secondary {
+            background: rgba(255,255,255,0.10);
+            color: white;
+        }
+        .meta {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.82);
+            font-size: 15px;
+            line-height: 1.45;
+        }
+        code {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+        .status {
+            margin-top: 16px;
+            min-height: 24px;
+            font-size: 16px;
+            color: #bfdbfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <h1>IIBOX • тест оплаты</h1>
+            <p>
+                Это отдельная тестовая страница CloudPayments. Здесь мы проверяем,
+                что виджет открывается и тестовая оплата проходит.
+            </p>
+
+            <div class="grid">
+                <div>
+                    <label for="amount">Сумма</label>
+                    <input id="amount" type="number" step="0.01" value="10" />
+                </div>
+
+                <div>
+                    <label for="description">Описание</label>
+                    <input id="description" type="text" value="Тестовая аренда IIBOX" />
+                </div>
+
+                <div>
+                    <label for="accountId">AccountId / телефон клиента</label>
+                    <input id="accountId" type="text" value="+79246667026" />
+                </div>
+
+                <div>
+                    <label for="invoiceId">Номер заказа</label>
+                    <input id="invoiceId" type="text" value="IIBOX-TEST-001" />
+                </div>
+            </div>
+
+            <div class="btns">
+                <button class="primary" id="payAuthBtn" type="button">Тест AUTH</button>
+                <button class="secondary" id="payChargeBtn" type="button">Тест CHARGE</button>
+                <a class="back secondary" href="/kiosk">Назад в kiosk</a>
+            </div>
+
+            <div class="status" id="status"></div>
+
+            <div class="meta">
+                <div><strong>Public ID:</strong> <code>{{ public_id }}</code></div>
+                <div><strong>Валюта:</strong> <code>{{ currency }}</code></div>
+                <div><strong>Тестовая карта:</strong> <code>4111 1111 1111 1111</code>, любая дата, любой CVV.</div>
+                <div style="margin-top:8px;">В тестовом режиме списания не происходит.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PUBLIC_ID = "{{ public_id }}";
+        const CURRENCY = "{{ currency }}";
+        const statusEl = document.getElementById("status");
+
+        function setStatus(text) {
+            statusEl.textContent = text;
+        }
+
+        function buildOptions() {
+            const amount = parseFloat(document.getElementById("amount").value || "0");
+            const description = document.getElementById("description").value || "Тестовая аренда IIBOX";
+            const accountId = document.getElementById("accountId").value || "";
+            const invoiceId = document.getElementById("invoiceId").value || "";
+
+            return {
+                publicId: PUBLIC_ID,
+                description: description,
+                amount: amount,
+                currency: CURRENCY,
+                accountId: accountId,
+                invoiceId: invoiceId,
+                skin: "modern",
+                data: {
+                    source: "iibox-test-page",
+                    scenario: "manual-widget-test"
+                }
+            };
+        }
+
+        function runPayment(method) {
+            if (!PUBLIC_ID || PUBLIC_ID.startsWith("PASTE_YOUR_")) {
+                setStatus("Сначала вставь реальный CLOUDPAYMENTS_PUBLIC_ID в файл .env");
+                return;
+            }
+
+            const widget = new cp.CloudPayments();
+
+            widget.pay(method, buildOptions(), {
+                onSuccess: function (options) {
+                    setStatus("Успешно. Виджет вернул success.");
+                    console.log("CloudPayments success", options);
+                },
+                onFail: function (reason, options) {
+                    setStatus("Неуспешно: " + reason);
+                    console.log("CloudPayments fail", reason, options);
+                },
+                onComplete: function (paymentResult, options) {
+                    console.log("CloudPayments complete", paymentResult, options);
+                }
+            });
+        }
+
+        document.getElementById("payAuthBtn").addEventListener("click", function () {
+            runPayment("auth");
+        });
+
+        document.getElementById("payChargeBtn").addEventListener("click", function () {
+            runPayment("charge");
+        });
+    </script>
+</body>
+</html>

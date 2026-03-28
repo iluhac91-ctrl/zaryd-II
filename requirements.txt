@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+jinja2
+sqlalchemy
+passlib[bcrypt]
+python-multipart
+python-dotenv
+requests
+RPi.GPIO

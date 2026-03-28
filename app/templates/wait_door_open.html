@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2f80ed">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <link rel="stylesheet" href="/static/style.css">
+
+    {% if next_url %}
+        <meta http-equiv="refresh" content="0;url={{ next_url }}">
+    {% else %}
+        <meta http-equiv="refresh" content="1;url={{ refresh_url }}">
+    {% endif %}
+</head>
+<body>
+    <div class="mobile-shell">
+        <div class="hero-card wait-screen">
+            <div class="spinner"></div>
+
+            <div class="step-badge">Шаг 1</div>
+            <h1 class="hero-title">{{ title }}</h1>
+            <p class="hero-subtitle">{{ description }}</p>
+
+            <div class="wait-card">
+                <div class="wait-row">
+                    <span class="wait-label">Ячейка</span>
+                    <span class="wait-value">№{{ slot_number }}</span>
+                </div>
+                <div class="wait-row">
+                    <span class="wait-label">Состояние дверцы</span>
+                    <span class="wait-value">
+                        {% if door_open %}открыта{% else %}закрыта{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="progress-steps">
+                <div class="progress-step active">Открытие</div>
+                <div class="progress-step">Закрытие</div>
+                <div class="progress-step">Готово</div>
+            </div>
+
+            {% if next_url %}
+                <p class="auto-text">Дверца открыта. Переходим дальше…</p>
+            {% else %}
+                <p class="auto-text">Ожидаем действие пользователя. Проверка идет автоматически…</p>
+            {% endif %}
+
+            <div class="mini-links">
+                <a href="{{ home_url if home_url else '/' }}">На главную</a>
+                <a href="/my-rental">Моя аренда</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

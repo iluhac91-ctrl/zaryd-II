@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вернуть заряд — IIBOX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="kiosk-body kiosk-body-v2">
+
+<div class="kiosk-form-v2">
+    <div class="kiosk-form-card-v2">
+        <div class="kiosk-form-header-v2">
+            <div class="kiosk-form-title-v2">Вернуть заряд</div>
+            <div class="kiosk-form-subtitle-v2">
+                Введите номер телефона и PIN-код
+            </div>
+        </div>
+
+        <form method="post" action="/kiosk/return/manual" class="kiosk-form-v2-form">
+            <input type="text" name="phone" placeholder="Номер телефона" required>
+            <input type="password" name="pin" placeholder="PIN-код" required>
+            <button type="submit" class="kiosk-submit-v2">Продолжить</button>
+        </form>
+
+        <div class="kiosk-back-v2">
+            <a href="/kiosk/return" class="kiosk-back-btn-v2">Назад</a>
+        </div>
+    </div>
+</div>
+
+<script src="/static/kiosk_idle_timeout.js"></script>
+</body>
+</html>

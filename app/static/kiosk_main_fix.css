@@ -1,0 +1,300 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body.kiosk-body.kiosk-body-v2 {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.kiosk-main-shell {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 14px 18px 12px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 82% 18%, rgba(59,130,246,0.16), transparent 24%),
+        radial-gradient(circle at 14% 84%, rgba(96,165,250,0.08), transparent 22%),
+        linear-gradient(135deg, #09111d 0%, #0f1726 45%, #15233a 100%);
+}
+
+.kiosk-main-header {
+    min-height: 0;
+    overflow: hidden;
+}
+
+.kiosk-main-overline {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.64);
+    margin-bottom: 3px;
+}
+
+.kiosk-main-brand {
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.kiosk-main-address {
+    font-size: 13px;
+    color: rgba(255,255,255,0.72);
+}
+
+.kiosk-main-grid {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 58% 42%;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.kiosk-main-left,
+.kiosk-main-right {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.kiosk-main-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.kiosk-main-hero h1 {
+    margin: 0 0 8px;
+    color: white;
+    font-size: 34px;
+    line-height: 1.03;
+    font-weight: 900;
+}
+
+.kiosk-main-hero p {
+    margin: 0 0 14px;
+    color: rgba(255,255,255,0.84);
+    font-size: 17px;
+    line-height: 1.28;
+    max-width: 100%;
+}
+
+.kiosk-main-warning {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255,183,0,0.14);
+    border: 1px solid rgba(255,205,0,0.22);
+    color: #ffe08a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.kiosk-main-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+.kiosk-main-btn {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: white;
+    border-radius: 26px;
+    padding: 16px 20px;
+    min-height: 88px;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        linear-gradient(135deg, #172554 0%, #1e3a8a 45%, #1d4ed8 100%);
+    box-shadow:
+        0 12px 24px rgba(0,0,0,0.24),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.kiosk-main-btn:active {
+    transform: scale(0.985);
+}
+
+.kiosk-main-btn-title {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.04;
+    margin-bottom: 5px;
+}
+
+.kiosk-main-btn-text {
+    font-size: 15px;
+    line-height: 1.22;
+    color: rgba(255,255,255,0.86);
+}
+
+.kiosk-main-right {
+    display: grid;
+    grid-template-rows: 138px 1fr auto;
+    gap: 10px;
+}
+
+.kiosk-main-visual-card {
+    min-width: 0;
+    min-height: 0;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.kiosk-main-scene {
+    width: 118px;
+    height: 118px;
+}
+
+.kiosk-main-powerbank {
+    width: 74px;
+    height: 116px;
+}
+
+.kiosk-main-powerbank .pb-front,
+.kiosk-main-powerbank .pb-back {
+    width: 74px;
+    height: 116px;
+}
+
+.kiosk-main-powerbank .pb-front { transform: translateZ(8px); }
+.kiosk-main-powerbank .pb-back { transform: rotateY(180deg) translateZ(8px); }
+
+.kiosk-main-powerbank .pb-left,
+.kiosk-main-powerbank .pb-right {
+    width: 16px;
+    height: 116px;
+    left: 29px;
+}
+
+.kiosk-main-powerbank .pb-left { transform: rotateY(-90deg) translateZ(37px); }
+.kiosk-main-powerbank .pb-right { transform: rotateY(90deg) translateZ(37px); }
+
+.kiosk-main-powerbank .pb-top,
+.kiosk-main-powerbank .pb-bottom {
+    width: 74px;
+    height: 16px;
+    top: 50px;
+}
+
+.kiosk-main-powerbank .pb-top { transform: rotateX(90deg) translateZ(58px); }
+.kiosk-main-powerbank .pb-bottom { transform: rotateX(-90deg) translateZ(58px); }
+
+.kiosk-main-powerbank .pb-screen {
+    top: 14px;
+    left: 9px;
+    right: 9px;
+    height: 24px;
+    border-radius: 8px;
+}
+
+.kiosk-main-powerbank .pb-logo {
+    bottom: 16px;
+    font-size: 12px;
+}
+
+.kiosk-main-info-card {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 12px 14px;
+    box-sizing: border-box;
+}
+
+.kiosk-main-info-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.kiosk-main-info-line {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: start;
+    margin-bottom: 10px;
+    color: rgba(255,255,255,0.88);
+    font-size: 15px;
+    line-height: 1.28;
+}
+
+.kiosk-main-step {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(37,99,235,0.24);
+    color: #dbeafe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.kiosk-main-info-note {
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.70);
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.kiosk-main-statusbar {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.kiosk-main-status-item {
+    min-width: 0;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.06);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.kiosk-main-status-item span {
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    line-height: 1.2;
+    max-width: 68%;
+}
+
+.kiosk-main-status-item strong {
+    color: white;
+    font-size: 22px;
+    font-weight: 900;
+    flex-shrink: 0;
+}

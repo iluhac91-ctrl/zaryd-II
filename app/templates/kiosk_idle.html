@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>IIBOX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="kiosk-body kiosk-idle-body" onclick="goStart()">
+
+<div class="idle-v2-shell">
+
+    <div class="idle-v2-bg-glow idle-v2-bg-glow-1"></div>
+    <div class="idle-v2-bg-glow idle-v2-bg-glow-2"></div>
+
+    <header class="idle-v2-header">
+        <div class="idle-v2-overline">POWER STATION</div>
+        <div class="idle-v2-brand">IIBOX</div>
+        <div class="idle-v2-subtitle">Аренда powerbank за пару секунд</div>
+    </header>
+
+    <main class="idle-v2-main">
+        <div class="idle-v2-visual">
+            <div class="idle-scene">
+                <div class="idle-ring idle-ring-1"></div>
+                <div class="idle-ring idle-ring-2"></div>
+
+                <div class="idle-powerbank">
+                    <div class="idle-pb-face idle-pb-front">
+                        <div class="idle-pb-screen"></div>
+                        <div class="idle-pb-brand">IIBOX</div>
+                    </div>
+                    <div class="idle-pb-face idle-pb-back"></div>
+                    <div class="idle-pb-face idle-pb-left"></div>
+                    <div class="idle-pb-face idle-pb-right"></div>
+                    <div class="idle-pb-face idle-pb-top"></div>
+                    <div class="idle-pb-face idle-pb-bottom"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="idle-v2-copy">
+            <div class="idle-v2-title">Возьмите или верните заряд</div>
+            <div class="idle-v2-text">
+                Коснитесь экрана, чтобы открыть меню станции
+            </div>
+        </div>
+    </main>
+
+    <footer class="idle-v2-footer">
+        <div class="idle-v2-tap">
+            <span class="idle-v2-tap-dot"></span>
+            <span>Коснитесь экрана, чтобы начать</span>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+function goStart() {
+    window.location.href = "/kiosk";
+}
+</script>
+
+</body>
+</html>

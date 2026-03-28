@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение выдачи</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta http-equiv="refresh" content="{{ timeout_seconds }};url=/" />
+</head>
+<body>
+    <div class="container">
+        <h1>Заберите заряд</h1>
+        <p>Открыта ячейка №{{ slot_number }}</p>
+        <p>Подтвердите получение в течение {{ timeout_seconds }} сек.</p>
+
+        <form method="post" action="/take/confirm">
+            <input type="hidden" name="rental_id" value="{{ rental_id }}">
+            <button type="submit" class="btn">Я забрал заряд</button>
+        </form>
+
+        <form method="post" action="/take/cancel" style="margin-top:12px;">
+            <input type="hidden" name="rental_id" value="{{ rental_id }}">
+            <button type="submit" class="btn secondary">Отмена</button>
+        </form>
+    </div>
+</body>
+</html>

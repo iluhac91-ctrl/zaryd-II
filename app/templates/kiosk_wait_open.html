@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Открытие ячейки</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+    {% if next_url %}
+        <meta http-equiv="refresh" content="0;url={{ next_url }}">
+    {% else %}
+        <meta http-equiv="refresh" content="1;url={{ refresh_url }}">
+    {% endif %}
+</head>
+<body class="kiosk-body kiosk-body-v2">
+
+<div class="kiosk-wait-screen">
+
+    <div class="kiosk-wait-card">
+        <div class="kiosk-wait-badge">Шаг 1</div>
+        <div class="kiosk-wait-icon">🔓</div>
+
+        <div class="kiosk-wait-title">Откройте ячейку</div>
+        <div class="kiosk-wait-text">
+            Ячейка №{{ slot_number }} открыта.<br>
+            Откройте дверцу и заберите powerbank.
+        </div>
+
+        <div class="kiosk-wait-status">
+            {% if door_open %}
+                Дверца открыта. Переходим дальше…
+            {% else %}
+                Ожидаем открытия дверцы…
+            {% endif %}
+        </div>
+
+        <div class="kiosk-spinner v2"></div>
+    </div>
+
+</div>
+
+</body>
+</html>
