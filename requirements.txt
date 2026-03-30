@@ -1,9 +1,5 @@
 fastapi
-uvicorn[standard]
+uvicorn
 jinja2
-sqlalchemy
-passlib[bcrypt]
 python-multipart
-python-dotenv
-requests
-RPi.GPIO
+sqlalchemy
