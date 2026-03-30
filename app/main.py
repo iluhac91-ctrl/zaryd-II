@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, Request, Form, Depends, Body, Body
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -29,6 +30,21 @@ if ON_RENDER:
 
 
 app = FastAPI(title="Charging Station MVP")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://beautiful-stardust-c61b83.netlify.app",
+        "https://zesty-syrniki-a16777.netlify.app",
+        "https://zaradki-ilyachur.amvera.io",
+        "http://127.0.0.1:8001",
+        "http://192.168.1.69:8001",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 Base.metadata.create_all(bind=engine)
 seed_slots()
