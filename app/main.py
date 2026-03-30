@@ -34,7 +34,7 @@ Base.metadata.create_all(bind=engine)
 seed_slots()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.mount("/site", StaticFiles(directory="/home/pi/iibox_site", html=True), name="site_public")
+app.mount("/site", StaticFiles(directory="public_site", html=True), name="site_public")
 templates = Jinja2Templates(directory="app/templates")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
