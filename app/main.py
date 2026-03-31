@@ -1558,3 +1558,28 @@ def debug_user(phone: str, db: Session = Depends(get_db)):
         "last4": user.card_last_four,
         "card_type": user.card_type
     }
+
+
+# ===== TAKE BY TOKEN =====
+@app.post("/take-by-token")
+def take_by_token(phone: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == phone).first()
+
+    if not user:
+        return {"error": "user not found"}
+
+    if not user.payment_token:
+        return {"error": "no payment token"}
+
+    from app.cloudpayments_api import charge_by_token
+
+    result = charge_by_token(
+        token=user.payment_token,
+        amount=100,
+        invoice_id="IIBOX-TOKEN"
+    )
+
+    return {
+        "status": "charged",
+        "cp_response": result
+    }
