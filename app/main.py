@@ -20,7 +20,11 @@ except Exception:
     sensor_controller = None
 from .config import load_config, save_config
 from .cloudpayments_api import make_test_charge, charge_by_token
-from app.amvera_api import auth_user_via_amvera
+try:
+    from app.amvera_api import auth_user_via_amvera
+except Exception:
+    def auth_user_via_amvera(phone: str, pin: str):
+        return {"ok": False, "error": "amvera_api_unavailable"}
 from .cloudpayments_config import CLOUDPAYMENTS_PUBLIC_ID, CLOUDPAYMENTS_CURRENCY
 
 from .render_hardware import ON_RENDER, DummyRelayController, DummySensorController
