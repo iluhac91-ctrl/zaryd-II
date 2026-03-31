@@ -1718,3 +1718,29 @@ def api_user_auth(phone: str = Form(...), pin: str = Form(...), db: Session = De
         "last4": user.card_last_four,
         "card_type": user.card_type
     }
+
+
+@app.post("/debug-create-user")
+def debug_create_user(phone: str, pin: str, db: Session = Depends(get_db)):
+    phone = normalize_phone(phone)
+    user = db.query(User).filter(User.phone == phone).first()
+
+    if user:
+        user.pin_hash = hash_pin(pin)
+        db.commit()
+        return {
+            "status": "updated",
+            "phone": user.phone
+        }
+
+    user = User(
+        phone=phone,
+        pin_hash=hash_pin(pin)
+    )
+    db.add(user)
+    db.commit()
+
+    return {
+        "status": "created",
+        "phone": user.phone
+    }
