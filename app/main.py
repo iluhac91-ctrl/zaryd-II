@@ -1529,3 +1529,19 @@ async def cloudpayments_pay_notification(request: Request, db: Session = Depends
 
     print("=== CLOUDPAYMENTS PAY NOTIFICATION END ===")
     return {"code": 0}
+
+
+# ===== DEBUG USER =====
+@app.get("/debug-user")
+def debug_user(phone: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == phone).first()
+    
+    if not user:
+        return {"error": "user not found"}
+
+    return {
+        "phone": user.phone,
+        "token": user.payment_token,
+        "last4": user.card_last_four,
+        "card_type": user.card_type
+    }
