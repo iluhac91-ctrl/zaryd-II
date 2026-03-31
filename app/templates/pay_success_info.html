@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IIBOX — Оплата прошла</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: #1e293b;
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    h1 {
+      margin: 0 0 16px 0;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+    .ok {
+      font-size: 60px;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 20px;
+      line-height: 1.5;
+      margin: 10px 0;
+    }
+    .steps {
+      text-align: left;
+      margin: 24px auto 0;
+      max-width: 420px;
+      background: #111827;
+      border-radius: 14px;
+      padding: 18px 20px;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+    .hint {
+      margin-top: 20px;
+      font-size: 17px;
+      color: #cbd5e1;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 14px 24px;
+      border-radius: 12px;
+      background: #22c55e;
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="ok">✅</div>
+    <h1>Оплата прошла успешно</h1>
+    <p>Карта привязана к вашему аккаунту IIBOX.</p>
+    <p>Теперь вы сможете получать заряд быстрее, без повторного ввода карты.</p>
+
+    <div class="steps">
+      <b>Что делать дальше:</b><br>
+      1. Вернитесь к станции<br>
+      2. Нажмите <b>«Взять заряд»</b><br>
+      3. Введите свой номер и PIN ещё раз
+    </div>
+
+    <div class="hint">
+      После этого станция продолжит выдачу заряда.
+    </div>
+
+    <a class="btn" href="/">Понятно</a>
+  </div>
+</body>
+</html>

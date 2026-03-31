@@ -1826,3 +1826,12 @@ def take_check_amvera(phone: str, pin: str):
     result = auth_user_via_amvera(phone, pin)
     print("AMVERA AUTH RESULT:", result)
     return result
+
+
+@app.get("/pay-success-info", response_class=HTMLResponse)
+def pay_success_info(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="pay_success_info.html",
+        context={"request": request},
+    )
