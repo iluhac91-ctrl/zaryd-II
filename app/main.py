@@ -493,13 +493,38 @@ def take_powerbank(
         )
 
     if not amvera_result.get("has_token"):
-        return render_message(
-            request,
-            "Нужна первая оплата",
-            "У вас ещё не привязана карта. Сначала выполните первую оплату.",
-            ui=ui,
-            is_error=True,
-        )
+        return HTMLResponse(f'''
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {{
+    font-family: Arial;
+    text-align: center;
+    padding: 40px;
+}}
+button {{
+    font-size: 20px;
+    padding: 15px 25px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-top: 20px;
+}}
+</style>
+</head>
+<body>
+<h2>Нужна первая оплата</h2>
+<p>У вас ещё не привязана карта</p>
+
+<button onclick="window.location.href='https://zaradki-ilyachur.amvera.io/pay-widget'">
+Оплатить и привязать карту
+</button>
+
+</body>
+</html>
+''')
 
     user = db.query(User).filter(User.phone == phone).first()
     if not user:
