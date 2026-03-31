@@ -1216,7 +1216,20 @@ async def cloudpayments_pay_notify(request: Request, db: Session = Depends(get_d
             db.commit()
             print("TOKEN SAVED FOR:", user.phone, user.payment_token)
         else:
-            print("USER NOT FOUND:", account_id)
+            user = User(
+                phone=account_id,
+                pin_hash="autocreated_by_webhook"
+            )
+            if token:
+                user.payment_token = token
+            if card_last_four:
+                user.card_last_four = card_last_four
+            if card_type:
+                user.card_type = card_type
+
+            db.add(user)
+            db.commit()
+            print("USER AUTO-CREATED:", account_id)
     else:
         print("NOT SUCCESS OR ACCOUNT_ID EMPTY")
 
