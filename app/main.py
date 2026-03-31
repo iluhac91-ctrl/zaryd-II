@@ -1691,3 +1691,30 @@ def take_by_token(phone: str, db: Session = Depends(get_db)):
     }
 
 # ===== END TAKE BY TOKEN =====
+
+
+@app.post("/api/user-auth")
+def api_user_auth(phone: str = Form(...), pin: str = Form(...), db: Session = Depends(get_db)):
+    phone = normalize_phone(phone)
+    user = db.query(User).filter(User.phone == phone).first()
+
+    if not user:
+        return {
+            "ok": False,
+            "error": "user_not_found"
+        }
+
+    if user.pin_hash != "autocreated_by_webhook":
+        if not verify_pin(pin, user.pin_hash):
+            return {
+                "ok": False,
+                "error": "wrong_pin"
+            }
+
+    return {
+        "ok": True,
+        "phone": user.phone,
+        "has_token": bool(user.payment_token),
+        "last4": user.card_last_four,
+        "card_type": user.card_type
+    }
