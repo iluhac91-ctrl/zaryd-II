@@ -1560,6 +1560,8 @@ def debug_user(phone: str, db: Session = Depends(get_db)):
     }
 
 
+
+
 # ===== TAKE BY TOKEN =====
 @app.post("/take-by-token")
 def take_by_token(phone: str, db: Session = Depends(get_db)):
@@ -1583,3 +1585,5 @@ def take_by_token(phone: str, db: Session = Depends(get_db)):
         "status": "charged",
         "cp_response": result
     }
+
+# ===== END TAKE BY TOKEN =====
