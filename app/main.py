@@ -20,6 +20,7 @@ except Exception:
     sensor_controller = None
 from .config import load_config, save_config
 from .cloudpayments_api import make_test_charge, charge_by_token
+from app.amvera_api import auth_user_via_amvera
 from .cloudpayments_config import CLOUDPAYMENTS_PUBLIC_ID, CLOUDPAYMENTS_CURRENCY
 
 from .render_hardware import ON_RENDER, DummyRelayController, DummySensorController
@@ -429,37 +430,66 @@ def take_powerbank(
         )
 
     phone = normalize_phone(phone)
+
+    amvera_result = auth_user_via_amvera(phone, pin)
+    print("AMVERA AUTH RESULT:", amvera_result)
+
+    if not amvera_result.get("ok"):
+        err = amvera_result.get("error")
+
+        if err == "user_not_found":
+            log_event(
+                db,
+                "take_user_not_found",
+                f"Amvera: пользователь не найден {phone}.",
+                user_phone=phone,
+            )
+            return render_message(
+                request,
+                "Ошибка",
+                "Пользователь не найден. Сначала зарегистрируйтесь.",
+                ui=ui,
+                is_error=True,
+            )
+
+        if err == "wrong_pin":
+            log_event(
+                db,
+                "take_bad_pin",
+                f"Amvera: неверный PIN для {phone}.",
+                user_phone=phone,
+            )
+            return render_message(
+                request,
+                "Ошибка",
+                "Неверный PIN.",
+                ui=ui,
+                is_error=True,
+            )
+
+        return render_message(
+            request,
+            "Ошибка",
+            f"Ошибка авторизации: {err}",
+            ui=ui,
+            is_error=True,
+        )
+
+    if not amvera_result.get("has_token"):
+        return render_message(
+            request,
+            "Нужна первая оплата",
+            "У вас ещё не привязана карта. Сначала выполните первую оплату.",
+            ui=ui,
+            is_error=True,
+        )
+
     user = db.query(User).filter(User.phone == phone).first()
-
     if not user:
-        log_event(
-            db,
-            "take_user_not_found",
-            f"Попытка взять заряд для несуществующего пользователя {phone}.",
-            user_phone=phone,
-        )
-        return render_message(
-            request,
-            "Ошибка",
-            "Пользователь не найден. Сначала зарегистрируйтесь.",
-            ui=ui,
-            is_error=True,
-        )
-
-    if not verify_pin(pin, user.pin_hash):
-        log_event(
-            db,
-            "take_bad_pin",
-            f"Неверный PIN при попытке выдачи для {phone}.",
-            user_phone=phone,
-        )
-        return render_message(
-            request,
-            "Ошибка",
-            "Неверный PIN.",
-            ui=ui,
-            is_error=True,
-        )
+        user = User(phone=phone, pin_hash="autocreated_by_webhook")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
 
     active_rental = get_user_active_rental(db, user.id)
     if active_rental and active_rental.status in ["issuing", "active", "returning"]:
