@@ -120,8 +120,13 @@
                 })
               })
               .then(r => r.json())
-              .then(data => log("SAVE TOKEN DEBUG RESPONSE", data))
-              .catch(err => log("SAVE TOKEN DEBUG ERROR", { error: String(err) }));
+            .then(data => {
+              log("SAVE TOKEN DEBUG RESPONSE", data);
+              setTimeout(() => {
+                window.location.href = "/pay-success-info";
+              }, 1200);
+            })
+            .catch(err => log("SAVE TOKEN DEBUG ERROR", { error: String(err) }));
             }
           }
         );
