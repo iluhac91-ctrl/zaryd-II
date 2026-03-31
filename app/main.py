@@ -53,6 +53,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/site", StaticFiles(directory="public_site", html=True), name="site_public")
 templates = Jinja2Templates(directory="app/templates")
 
+LAST_CP_PAYLOAD = {}
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ISSUE_TIMEOUT_SECONDS = 20
@@ -1545,10 +1547,91 @@ async def cloudpayments_pay_notification(request: Request, db: Session = Depends
 
 
 # ===== DEBUG USER =====
+
+@app.post("/take-by-token")
+def take_by_token(phone: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == phone).first()
+
+    if not user:
+        return {"error": "user not found"}
+
+    if not user.payment_token:
+        return {"error": "no payment token"}
+
+    from app.cloudpayments_api import charge_by_token
+
+    result = charge_by_token(
+        token=user.payment_token,
+        amount=100,
+        invoice_id="IIBOX-TOKEN",
+        account_id=user.phone
+    )
+
+    return {
+        "status": "charged",
+        "cp_response": result
+    }
+
+# ===== END TAKE BY TOKEN =====
+
+
+
+@app.post("/cloudpayments/pay-notify")
+async def cloudpayments_pay_notify(request: Request, db: Session = Depends(get_db)):
+    global LAST_CP_PAYLOAD
+    payload = await request.json()
+    LAST_CP_PAYLOAD = payload
+
+    print("=== CP PAY NOTIFY START ===")
+    print(payload)
+    print("=== CP PAY NOTIFY END ===")
+
+    success = payload.get("Success")
+    account_id = payload.get("AccountId")
+    token = payload.get("Token")
+    card_last_four = payload.get("CardLastFour")
+    card_type = payload.get("CardType")
+
+    if success and account_id:
+        user = db.query(User).filter(User.phone == account_id).first()
+
+        if user:
+            if token:
+                user.payment_token = token
+            if card_last_four:
+                user.card_last_four = card_last_four
+            if card_type:
+                user.card_type = card_type
+
+            db.commit()
+            print("TOKEN SAVED FOR:", user.phone, user.payment_token)
+        else:
+            user = User(
+                phone=account_id,
+                pin_hash="autocreated_by_webhook"
+            )
+            if token:
+                user.payment_token = token
+            if card_last_four:
+                user.card_last_four = card_last_four
+            if card_type:
+                user.card_type = card_type
+
+            db.add(user)
+            db.commit()
+            print("USER AUTO-CREATED:", account_id)
+    else:
+        print("NOT SUCCESS OR ACCOUNT_ID EMPTY")
+
+    return {"code": 0}
+
+# ===== END CLOUDPAYMENTS WEBHOOK =====
+
+
 @app.get("/debug-user")
 def debug_user(phone: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.phone == phone).first()
-    
+
     if not user:
         return {"error": "user not found"}
 
@@ -1560,6 +1643,26 @@ def debug_user(phone: str, db: Session = Depends(get_db)):
     }
 
 
+@app.post("/debug-clear-user")
+def debug_clear_user(phone: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == phone).first()
+    if not user:
+        return {"error": "user not found"}
+
+    user.payment_token = None
+    user.card_last_four = None
+    user.card_type = None
+    db.commit()
+
+    return {
+        "status": "cleared",
+        "phone": user.phone
+    }
+
+
+@app.get("/debug-last-pay-notify")
+def debug_last_pay_notify():
+    return LAST_CP_PAYLOAD
 
 
 # ===== TAKE BY TOKEN =====
@@ -1588,17 +1691,3 @@ def take_by_token(phone: str, db: Session = Depends(get_db)):
     }
 
 # ===== END TAKE BY TOKEN =====
-
-
-@app.post("/debug-clear-user")
-def debug_clear_user(phone: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.phone == phone).first()
-    if not user:
-        return {"error": "user not found"}
-
-    user.payment_token = None
-    user.card_last_four = None
-    user.card_type = None
-    db.commit()
-
-    return {"status": "cleared", "phone": user.phone}
