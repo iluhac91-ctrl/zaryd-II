@@ -19,7 +19,7 @@ try:
 except Exception:
     sensor_controller = None
 from .config import load_config, save_config
-from .cloudpayments_api import make_test_charge
+from .cloudpayments_api import make_test_charge, charge_by_token
 from .cloudpayments_config import CLOUDPAYMENTS_PUBLIC_ID, CLOUDPAYMENTS_CURRENCY
 
 from .render_hardware import ON_RENDER, DummyRelayController, DummySensorController
@@ -493,7 +493,11 @@ def take_powerbank(
             is_error=True,
         )
 
-    relay_controller.open_slot(slot.relay_channel, seconds=1.0)
+    
+# ===== 💳 ОПЛАТА ПЕРЕД ВЫДАЧЕЙ =====
+
+    
+
 
     rental = Rental(
         user_id=user.id,
@@ -1134,12 +1138,20 @@ def pay_checkout_test_page(request: Request):
 
 
 @app.post("/pay-checkout-test-charge")
-def pay_checkout_test_charge(payload: dict = Body(...)):
+def pay_checkout_test_charge(payload: dict = Body(...), db: Session = Depends(get_db)):
     cryptogram = payload.get("cryptogram", "")
     amount = float(payload.get("amount", 0))
     account_id = payload.get("account_id", "")
     description = payload.get("description", "Тестовая аренда IIBOX")
     email = payload.get("email", "")
+
+    print("=== CP REQUEST START ===")
+    print("account_id:", account_id)
+    print("amount:", amount)
+    print("description:", description)
+    print("email:", email)
+    print("cryptogram_present:", bool(cryptogram))
+    print("=== CP REQUEST END ===")
 
     result = make_test_charge(
         cryptogram=cryptogram,
@@ -1148,7 +1160,94 @@ def pay_checkout_test_charge(payload: dict = Body(...)):
         description=description,
         email=email,
     )
+
+    print("=== CP RESPONSE START ===")
+    print(result)
+    print("=== CP RESPONSE END ===")
+
+    if result.get("Success"):
+        model = result.get("Model", {}) or {}
+        token = model.get("Token")
+        print("CP SUCCESS TOKEN:", token)
+
+        if token and account_id:
+            user = db.query(User).filter(User.phone == account_id).first()
+            if user:
+                user.payment_token = token
+                db.commit()
+                print("TOKEN SAVED FOR:", user.phone)
+            else:
+                print("USER NOT FOUND FOR TOKEN SAVE:", account_id)
+        else:
+            print("TOKEN MISSING OR ACCOUNT_ID EMPTY")
+    else:
+        model = result.get("Model", {}) or {}
+        print("CP FAILED STATUS:", model.get("Status"))
+        print("CP FAILED REASON:", model.get("Reason"))
+        print("CP FAILED CARDHOLDER MESSAGE:", model.get("CardHolderMessage"))
+
     return result
+
+
+
+@app.post("/cloudpayments/pay-notify")
+async def cloudpayments_pay_notify(request: Request, db: Session = Depends(get_db)):
+    payload = await request.json()
+
+    print("=== CP PAY NOTIFY START ===")
+    print(payload)
+    print("=== CP PAY NOTIFY END ===")
+
+    success = payload.get("Success")
+    account_id = payload.get("AccountId")
+    token = payload.get("Token")
+    card_last_four = payload.get("CardLastFour")
+    card_type = payload.get("CardType")
+
+    if success and account_id:
+        user = db.query(User).filter(User.phone == account_id).first()
+        if user:
+            if token:
+                user.payment_token = token
+            if card_last_four:
+                user.card_last_four = card_last_four
+            if card_type:
+                user.card_type = card_type
+            db.commit()
+            print("TOKEN SAVED FOR:", user.phone, user.payment_token)
+        else:
+            print("USER NOT FOUND:", account_id)
+    else:
+        print("NOT SUCCESS OR ACCOUNT_ID EMPTY")
+
+    return {"code": 0}
+
+@app.get("/pay-widget", response_class=HTMLResponse)
+def pay_widget_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="pay_widget.html",
+        context={
+            "request": request,
+            "public_id": CLOUDPAYMENTS_PUBLIC_ID,
+            "currency": CLOUDPAYMENTS_CURRENCY,
+        },
+    )
+
+
+@app.post("/save-token-debug")
+def save_token_debug(payload: dict = Body(...), db: Session = Depends(get_db)):
+    account_id = payload.get("account_id", "")
+    print("=== SAVE TOKEN DEBUG START ===")
+    print("ACCOUNT ID:", account_id)
+    print("PAYLOAD:", payload)
+    print("=== SAVE TOKEN DEBUG END ===")
+
+    user = db.query(User).filter(User.phone == account_id).first()
+    if not user:
+        return {"ok": False, "message": "user_not_found", "account_id": account_id}
+
+    return {"ok": True, "message": "callback_received", "account_id": account_id}
 
 @app.get("/pay-test", response_class=HTMLResponse)
 def pay_test_page(request: Request):
@@ -1332,7 +1431,11 @@ def admin_page(request: Request, db: Session = Depends(get_db)):
 def admin_open_slot(slot_number: int = Form(...), db: Session = Depends(get_db)):
     slot = db.query(Slot).filter(Slot.slot_number == slot_number).first()
     if slot:
-        relay_controller.open_slot(slot.relay_channel, seconds=1.0)
+        
+# ===== 💳 ОПЛАТА ПЕРЕД ВЫДАЧЕЙ =====
+
+    
+
         log_event(
             db,
             "admin_open_slot",
@@ -1371,3 +1474,58 @@ from fastapi.responses import FileResponse
 @app.get("/download-site")
 def download_site():
     return FileResponse("/home/pi/iibox_public_site/index.html")
+
+
+@app.post("/cloudpayments/pay-notification")
+async def cloudpayments_pay_notification(request: Request, db: Session = Depends(get_db)):
+    content_type = request.headers.get("content-type", "").lower()
+
+    if "application/json" in content_type:
+        payload = await request.json()
+    else:
+        form = await request.form()
+        payload = dict(form)
+
+    print("=== CLOUDPAYMENTS PAY NOTIFICATION START ===")
+    print(payload)
+
+    account_id = str(payload.get("AccountId", "")).strip()
+    token = payload.get("Token")
+    transaction_id = payload.get("TransactionId")
+    status = payload.get("Status")
+    amount = payload.get("Amount")
+    invoice_id = payload.get("InvoiceId")
+
+    user = None
+    if account_id:
+        user = db.query(User).filter(User.phone == account_id).first()
+
+    if user and token:
+        user.payment_token = token
+        db.commit()
+        print("TOKEN SAVED FOR USER:", user.phone)
+        log_event(
+            db,
+            "payment_token_saved",
+            f"Токен сохранён через notification. TransactionId={transaction_id}, Status={status}, Amount={amount}, InvoiceId={invoice_id}",
+            user_phone=user.phone,
+        )
+    elif user:
+        print("USER FOUND, BUT TOKEN IS EMPTY")
+        log_event(
+            db,
+            "payment_notification_no_token",
+            f"Notification пришёл без токена. TransactionId={transaction_id}, Status={status}, Amount={amount}, InvoiceId={invoice_id}",
+            user_phone=user.phone,
+        )
+    else:
+        print("USER NOT FOUND FOR ACCOUNT_ID:", account_id)
+        log_event(
+            db,
+            "payment_notification_user_not_found",
+            f"Не найден пользователь для AccountId={account_id}. TransactionId={transaction_id}, Status={status}, Amount={amount}, InvoiceId={invoice_id}",
+            user_phone=account_id or None,
+        )
+
+    print("=== CLOUDPAYMENTS PAY NOTIFICATION END ===")
+    return {"code": 0}
