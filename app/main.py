@@ -307,6 +307,18 @@ def get_available_slot_for_return(db: Session):
     return db.query(Slot).filter(Slot.status == "empty").order_by(Slot.slot_number).first()
 
 
+
+
+def ensure_local_user(db: Session, phone: str):
+    user = db.query(User).filter(User.phone == phone).first()
+    if not user:
+        user = User(phone=phone, pin_hash="autocreated_by_webhook")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return user
+
+
 def get_user_active_rental(db: Session, user_id: int):
     return db.query(Rental).filter(
         Rental.user_id == user_id,
