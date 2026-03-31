@@ -1835,3 +1835,11 @@ def pay_success_info(request: Request):
         name="pay_success_info.html",
         context={"request": request},
     )
+
+
+@app.get("/take-ui", response_class=HTMLResponse)
+def take_ui(request: Request):
+    return templates.TemplateResponse(
+        "take_powerbank.html",
+        {"request": request}
+    )
