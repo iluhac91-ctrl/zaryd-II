@@ -1720,13 +1720,15 @@ def api_user_auth(phone: str = Form(...), pin: str = Form(...), db: Session = De
     }
 
 
+
+
 @app.post("/debug-create-user")
-def debug_create_user(phone: str, pin: str, db: Session = Depends(get_db)):
+def debug_create_user(phone: str, db: Session = Depends(get_db)):
     phone = normalize_phone(phone)
     user = db.query(User).filter(User.phone == phone).first()
 
     if user:
-        user.pin_hash = hash_pin(pin)
+        user.pin_hash = "autocreated_by_webhook"
         db.commit()
         return {
             "status": "updated",
@@ -1735,7 +1737,7 @@ def debug_create_user(phone: str, pin: str, db: Session = Depends(get_db)):
 
     user = User(
         phone=phone,
-        pin_hash=hash_pin(pin)
+        pin_hash="autocreated_by_webhook"
     )
     db.add(user)
     db.commit()
