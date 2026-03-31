@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-from .database import Base, engine, get_db
+from .database import Base, engine, get_db, ensure_sqlite_columns
 from .models import User, Slot, Rental, EventLog
 try:
     from .relay import relay_controller
@@ -52,6 +52,7 @@ app.add_middleware(
 
 
 Base.metadata.create_all(bind=engine)
+ensure_sqlite_columns()
 seed_slots()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
