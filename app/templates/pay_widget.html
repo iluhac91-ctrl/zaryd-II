@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IIBOX Widget Pay</title>
+  <script src="https://widget.cloudpayments.ru/bundles/cloudpayments.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    h1 { margin-top: 0; font-size: 24px; }
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    input { background: #334155; color: white; }
+    button { background: #22c55e; color: white; font-weight: bold; cursor: pointer; }
+    .log {
+      margin-top: 16px;
+      background: #111827;
+      padding: 12px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      font-size: 13px;
+      min-height: 160px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Оплата IIBOX</h1>
+    <input id="accountId" type="text" placeholder="Телефон, например +79246667026" />
+    <input id="email" type="email" placeholder="Email" />
+    <input id="amount" type="number" step="0.01" value="100" placeholder="Сумма" />
+    <button id="payBtn">Оплатить</button>
+    <div class="log" id="log">PAGE LOADED</div>
+  </div>
+
+  <script>
+    const log = (msg, data = null) => {
+      const el = document.getElementById("log");
+      const time = new Date().toLocaleTimeString();
+      el.textContent += `\n[${time}] ${msg}`;
+      if (data) el.textContent += `\n${JSON.stringify(data, null, 2)}`;
+      console.log(msg, data || "");
+    };
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      log("WINDOW ERROR", { message, source, lineno, colno, error: error ? String(error) : null });
+    };
+
+    document.getElementById("payBtn").addEventListener("click", function () {
+      const accountId = document.getElementById("accountId").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value || "100");
+
+      if (!accountId) {
+        log("НУЖЕН accountId");
+        return;
+      }
+
+      log("START WIDGET", { accountId, email, amount });
+
+      try {
+        const widget = new cp.CloudPayments();
+        log("WIDGET CREATED");
+
+        widget.pay('auth',
+          {
+            publicId: '{{ public_id }}',
+            description: 'Тестовая аренда IIBOX',
+            amount: amount,
+            currency: '{{ currency }}',
+            accountId: accountId,
+            email: email,
+            invoiceId: 'IIBOX-' + Date.now(),
+            skin: 'modern'
+          },
+          {
+            onSuccess: function (options) {
+              log("SUCCESS CALLBACK", options);
+            },
+            onFail: function (reason, options) {
+              log("FAIL CALLBACK", { reason, options });
+            },
+            onComplete: function (paymentResult, options) {
+              log("COMPLETE CALLBACK", { paymentResult, options });
+
+              fetch("/save-token-debug", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  account_id: accountId,
+                  email: email,
+                  amount: amount,
+                  paymentResult: paymentResult,
+                  options: options
+                })
+              })
+              .then(r => r.json())
+              .then(data => log("SAVE TOKEN DEBUG RESPONSE", data))
+              .catch(err => log("SAVE TOKEN DEBUG ERROR", { error: String(err) }));
+            }
+          }
+        );
+
+        log("WIDGET PAY CALLED");
+      } catch (e) {
+        log("TRY/CATCH ERROR", { error: String(e), stack: e && e.stack ? e.stack : null });
+      }
+    });
+  </script>
+</body>
+</html>

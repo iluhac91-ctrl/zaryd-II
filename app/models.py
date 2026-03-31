@@ -10,6 +10,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     phone = Column(String, unique=True, index=True, nullable=False)
     pin_hash = Column(String, nullable=False)
+    payment_token = Column(String, nullable=True)
+    card_last_four = Column(String, nullable=True)
+    card_type = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     rentals = relationship("Rental", back_populates="user")
