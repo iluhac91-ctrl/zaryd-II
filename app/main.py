@@ -1588,3 +1588,17 @@ def take_by_token(phone: str, db: Session = Depends(get_db)):
     }
 
 # ===== END TAKE BY TOKEN =====
+
+
+@app.post("/debug-clear-user")
+def debug_clear_user(phone: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.phone == phone).first()
+    if not user:
+        return {"error": "user not found"}
+
+    user.payment_token = None
+    user.card_last_four = None
+    user.card_type = None
+    db.commit()
+
+    return {"status": "cleared", "phone": user.phone}
