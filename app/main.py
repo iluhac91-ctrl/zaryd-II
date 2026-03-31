@@ -1780,3 +1780,11 @@ def debug_create_user(phone: str, db: Session = Depends(get_db)):
         "status": "created",
         "phone": user.phone
     }
+
+
+@app.post("/take-check-amvera")
+def take_check_amvera(phone: str, pin: str):
+    phone = normalize_phone(phone)
+    result = auth_user_via_amvera(phone, pin)
+    print("AMVERA AUTH RESULT:", result)
+    return result
