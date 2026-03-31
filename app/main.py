@@ -1578,7 +1578,8 @@ def take_by_token(phone: str, db: Session = Depends(get_db)):
     result = charge_by_token(
         token=user.payment_token,
         amount=100,
-        invoice_id="IIBOX-TOKEN"
+        invoice_id="IIBOX-TOKEN",
+        account_id=user.phone
     )
 
     return {
