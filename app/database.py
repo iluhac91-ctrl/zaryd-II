@@ -55,3 +55,5 @@ def ensure_sqlite_columns():
             conn.execute(text("ALTER TABLE users ADD COLUMN card_last_four TEXT"))
         if "card_type" not in cols:
             conn.execute(text("ALTER TABLE users ADD COLUMN card_type TEXT"))
+        if "demo_paid" not in cols:
+            conn.execute(text("ALTER TABLE users ADD COLUMN demo_paid INTEGER DEFAULT 0"))

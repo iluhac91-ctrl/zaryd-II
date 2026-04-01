@@ -1946,3 +1946,19 @@ def kiosk_success(request: Request, slot: int = 1):
             "slot": slot
         },
     )
+
+
+@app.post("/demo-mark-paid")
+def demo_mark_paid(payload: dict = Body(...), db: Session = Depends(get_db)):
+    phone = normalize_phone(payload.get("phone", ""))
+    if not phone:
+        return {"ok": False, "error": "phone_required"}
+
+    user = db.query(User).filter(User.phone == phone).first()
+    if not user:
+        return {"ok": False, "error": "user_not_found"}
+
+    user.demo_paid = True
+    db.commit()
+
+    return {"ok": True, "phone": user.phone, "demo_paid": True}

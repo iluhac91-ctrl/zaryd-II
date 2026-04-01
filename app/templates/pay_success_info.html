@@ -81,11 +81,35 @@
       3. Введите свой номер и PIN ещё раз
     </div>
 
-    <div class="hint">
-      Если потребуется, станция сама подскажет следующий шаг.
+    <div class="hint" id="statusText">
+      Подготавливаем доступ к демо-выдаче…
     </div>
 
-    <a class="btn" href="/">Понятно</a>
+    <a class="btn" href="/kiosk">Понятно</a>
   </div>
+
+  <script>
+    const phone = localStorage.getItem("iibox_phone") || "";
+    if (phone) {
+      fetch("/demo-mark-paid", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ phone })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const el = document.getElementById("statusText");
+        if (data.ok) {
+          el.textContent = "Демо-доступ активирован. Можно вернуться к станции.";
+        } else {
+          el.textContent = "Оплата прошла. Если потребуется, повторите попытку на станции.";
+        }
+      })
+      .catch(() => {
+        const el = document.getElementById("statusText");
+        el.textContent = "Оплата прошла. Если потребуется, повторите попытку на станции.";
+      });
+    }
+  </script>
 </body>
 </html>

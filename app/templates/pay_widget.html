@@ -57,6 +57,12 @@
 
 <script>
 function pay() {
+  try {
+    localStorage.setItem("iibox_phone", "{{ account_id }}");
+  } catch (e) {}
+  try {
+    localStorage.setItem("iibox_phone", "{{ account_id }}");
+  } catch (e) {}
   var widget = new cp.CloudPayments();
 
   widget.pay('auth', {
