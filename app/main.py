@@ -764,6 +764,12 @@ def confirm_take_sensor(
         rental_id=rental.id,
     )
 
+    if ui == "kiosk":
+        return RedirectResponse(
+            url=f"/kiosk/success?slot={rental.slot_number}",
+            status_code=303,
+        )
+
     return render_message(
         request,
         "Заряд выдан",
@@ -1914,3 +1920,23 @@ def api_user_register(phone: str = Form(...), pin: str = Form(...), db: Session 
         "ok": True,
         "phone": user.phone
     }
+
+@app.get("/kiosk/first-payment", response_class=HTMLResponse)
+def kiosk_first_payment_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="kiosk_first_payment.html",
+        context={"request": request},
+    )
+
+
+@app.get("/kiosk/success", response_class=HTMLResponse)
+def kiosk_success(request: Request, slot: int = 1):
+    return templates.TemplateResponse(
+        request=request,
+        name="kiosk_success.html",
+        context={
+            "request": request,
+            "slot": slot
+        },
+    )
