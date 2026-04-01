@@ -770,6 +770,12 @@ def confirm_take_sensor(
             status_code=303,
         )
 
+    if ui == "kiosk":
+        return RedirectResponse(
+            url=f"/kiosk/success?slot={rental.slot_number}",
+            status_code=303,
+        )
+
     return render_message(
         request,
         "Заряд выдан",
