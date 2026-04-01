@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import hashlib
 from fastapi import FastAPI, Request, Form, Depends, Body, Body
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -1801,7 +1802,17 @@ def api_user_auth(phone: str = Form(...), pin: str = Form(...), db: Session = De
             "error": "user_not_found"
         }
 
-    if user.pin_hash != "autocreated_by_webhook":
+    if user.pin_hash == "autocreated_by_webhook":
+        pass
+    elif user.pin_hash.startswith("sha256$"):
+        expected = user.pin_hash.split("$", 1)[1]
+        actual = hashlib.sha256(pin.encode()).hexdigest()
+        if actual != expected:
+            return {
+                "ok": False,
+                "error": "wrong_pin"
+            }
+    else:
         if not verify_pin(pin, user.pin_hash):
             return {
                 "ok": False,
@@ -1893,9 +1904,11 @@ def api_user_register(phone: str = Form(...), pin: str = Form(...), db: Session 
             "error": "user_already_exists"
         }
 
+    pin_hash = "sha256$" + hashlib.sha256(pin.encode()).hexdigest()
+
     user = User(
         phone=phone,
-        pin_hash=hash_pin(pin)
+        pin_hash=pin_hash
     )
     db.add(user)
     db.commit()
