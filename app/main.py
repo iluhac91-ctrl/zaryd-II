@@ -21,9 +21,11 @@ except Exception:
 from .config import load_config, save_config
 from .cloudpayments_api import make_test_charge, charge_by_token
 try:
-    from app.amvera_api import auth_user_via_amvera
+    from app.amvera_api import auth_user_via_amvera, register_user_via_amvera
 except Exception:
     def auth_user_via_amvera(phone: str, pin: str):
+        return {"ok": False, "error": "amvera_api_unavailable"}
+    def register_user_via_amvera(phone: str, pin: str):
         return {"ok": False, "error": "amvera_api_unavailable"}
 from .cloudpayments_config import CLOUDPAYMENTS_PUBLIC_ID, CLOUDPAYMENTS_CURRENCY
 
@@ -461,7 +463,7 @@ def take_powerbank(
                 f"Amvera: пользователь не найден {phone}.",
                 user_phone=phone,
             )
-            return RedirectResponse(url="/kiosk/register", status_code=303)
+            return RedirectResponse(url="/kiosk/user-not-found", status_code=303)
 
         if err == "wrong_pin":
             log_event(
@@ -1166,7 +1168,36 @@ def kiosk_register_submit(
     pin: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    return register_user(request=request, phone=phone, pin=pin, ui="kiosk", db=db)
+    result = register_user_via_amvera(phone, pin)
+    print("AMVERA REGISTER RESULT:", result)
+
+    if not result.get("ok"):
+        err = result.get("error")
+
+        if err == "user_already_exists":
+            return render_message(
+                request,
+                "Пользователь уже существует",
+                "Такой номер уже зарегистрирован. Попробуйте войти с этим номером и PIN-кодом.",
+                ui="kiosk",
+                is_error=True,
+            )
+
+        return render_message(
+            request,
+            "Ошибка",
+            f"Ошибка регистрации: {err}",
+            ui="kiosk",
+            is_error=True,
+        )
+
+    return render_message(
+        request,
+        "Регистрация успешна",
+        "Аккаунт создан. Теперь выполните первую оплату или вернитесь к получению заряда.",
+        ui="kiosk",
+        is_error=False,
+    )
 
 
 @app.post("/kiosk/take/manual", response_class=HTMLResponse)
@@ -1840,3 +1871,36 @@ def take_ui(request: Request):
     )
 
 
+
+
+@app.get("/kiosk/user-not-found", response_class=HTMLResponse)
+def kiosk_user_not_found_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="kiosk_user_not_found.html",
+        context={"request": request},
+    )
+
+
+@app.post("/api/user-register")
+def api_user_register(phone: str = Form(...), pin: str = Form(...), db: Session = Depends(get_db)):
+    phone = normalize_phone(phone)
+    user = db.query(User).filter(User.phone == phone).first()
+
+    if user:
+        return {
+            "ok": False,
+            "error": "user_already_exists"
+        }
+
+    user = User(
+        phone=phone,
+        pin_hash=hash_pin(pin)
+    )
+    db.add(user)
+    db.commit()
+
+    return {
+        "ok": True,
+        "phone": user.phone
+    }

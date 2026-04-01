@@ -16,3 +16,15 @@ def auth_user_via_amvera(phone: str, pin: str):
         verify=False,
     )
     return response.json()
+
+def register_user_via_amvera(phone: str, pin: str):
+    response = requests.post(
+        f"{AMVERA_BASE_URL}/api/user-register",
+        data={
+            "phone": phone,
+            "pin": pin,
+        },
+        timeout=20,
+        verify=False,
+    )
+    return response.json()
