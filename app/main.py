@@ -461,13 +461,7 @@ def take_powerbank(
                 f"Amvera: пользователь не найден {phone}.",
                 user_phone=phone,
             )
-            return render_message(
-                request,
-                "Ошибка",
-                "Пользователь не найден. Сначала зарегистрируйтесь.",
-                ui=ui,
-                is_error=True,
-            )
+            return RedirectResponse(url="/kiosk/register", status_code=303)
 
         if err == "wrong_pin":
             log_event(
@@ -1840,6 +1834,9 @@ def pay_success_info(request: Request):
 @app.get("/take-ui", response_class=HTMLResponse)
 def take_ui(request: Request):
     return templates.TemplateResponse(
-        "take_powerbank.html",
-        {"request": request}
+        request=request,
+        name="take_powerbank.html",
+        context={"request": request},
     )
+
+
