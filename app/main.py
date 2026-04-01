@@ -1192,12 +1192,9 @@ def kiosk_register_submit(
             is_error=True,
         )
 
-    return render_message(
-        request,
-        "Регистрация успешна",
-        "Аккаунт создан. Теперь выполните первую оплату или вернитесь к получению заряда.",
-        ui="kiosk",
-        is_error=False,
+    return RedirectResponse(
+        url="/kiosk/first-payment",
+        status_code=303
     )
 
 
