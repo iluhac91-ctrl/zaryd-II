@@ -312,6 +312,25 @@ def get_available_slot_for_return(db: Session):
 
 
 
+
+
+def get_free_slot(db: Session):
+    return (
+        db.query(Slot)
+        .filter(Slot.is_active == True, Slot.is_occupied == False)
+        .order_by(Slot.number.asc())
+        .first()
+    )
+
+
+def get_user_active_rental(db: Session, user_id: int):
+    return (
+        db.query(Rental)
+        .filter(Rental.user_id == user_id, Rental.returned_at.is_(None))
+        .first()
+    )
+
+
 def ensure_local_user(db: Session, phone: str):
     user = db.query(User).filter(User.phone == phone).first()
     if not user:
@@ -770,6 +789,37 @@ def confirm_take_sensor(
             status_code=303,
         )
 
+    active_rental = get_user_active_rental(db, user.id)
+    if active_rental:
+        return render_message(
+            request,
+            "У вас уже есть активная аренда",
+            f"У вас уже выдан powerbank из слота №{active_rental.slot_number}. Сначала верните его.",
+            ui=ui,
+            is_error=True,
+        )
+
+    slot = get_free_slot(db)
+    if not slot:
+        return render_message(
+            request,
+            "Нет доступных powerbank",
+            "Сейчас все powerbank заняты. Попробуйте чуть позже.",
+            ui=ui,
+            is_error=True,
+        )
+
+    slot.is_occupied = True
+
+    rental = Rental(
+        user_id=user.id,
+        slot_number=slot.number,
+        started_at=datetime.utcnow(),
+    )
+    db.add(rental)
+    db.commit()
+    db.refresh(rental)
+
     if ui == "kiosk":
         return RedirectResponse(
             url=f"/kiosk/success?slot={rental.slot_number}",
@@ -779,7 +829,7 @@ def confirm_take_sensor(
     return render_message(
         request,
         "Заряд выдан",
-        f"Дверца ячейки №{rental.slot_number} открывалась и снова закрылась. Выдача завершена.",
+        f"Powerbank выдан из слота №{rental.slot_number}.",
         ui=ui,
         is_error=False,
     )
@@ -1962,3 +2012,32 @@ def demo_mark_paid(payload: dict = Body(...), db: Session = Depends(get_db)):
     db.commit()
 
     return {"ok": True, "phone": user.phone, "demo_paid": True}
+
+
+@app.get("/debug-slots")
+def debug_slots(db: Session = Depends(get_db)):
+    slots = db.query(Slot).order_by(Slot.number.asc()).all()
+    return [
+        {
+            "number": s.number,
+            "is_active": s.is_active,
+            "is_occupied": s.is_occupied,
+        }
+        for s in slots
+    ]
+
+
+@app.post("/debug-slot-set")
+def debug_slot_set(number: int, occupied: bool, db: Session = Depends(get_db)):
+    slot = db.query(Slot).filter(Slot.number == number).first()
+    if not slot:
+        return {"ok": False, "error": "slot_not_found"}
+
+    slot.is_occupied = occupied
+    db.commit()
+
+    return {
+        "ok": True,
+        "slot": slot.number,
+        "is_occupied": slot.is_occupied,
+    }
