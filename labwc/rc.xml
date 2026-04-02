@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+	<touch deviceName="WaveShare WS170120" mapToOutput="HDMI-A-1" mouseEmulation="yes"/>
+</openbox_config>
